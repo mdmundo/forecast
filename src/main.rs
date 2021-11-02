@@ -23,7 +23,7 @@ async fn main() {
     let longitude = &geocode_res["features"][0]["center"][0]
         .as_f64()
         .expect("Not a f64");
-    let location = &geocode_res["features"][0]["text"]
+    let location = geocode_res["features"][0]["text"]
         .as_str()
         .expect("Not a str");
 
@@ -39,7 +39,7 @@ async fn main() {
         .await
         .expect("Serialization error");
 
-    let summary = &forecast_res["currently"]["summary"]
+    let summary = forecast_res["currently"]["summary"]
         .as_str()
         .expect("Not a str");
     let temperature = &forecast_res["currently"]["temperature"]
@@ -48,7 +48,7 @@ async fn main() {
     let precip_probability = &forecast_res["currently"]["precipProbability"]
         .as_f64()
         .expect("Not a f64");
-    let precip_type = &forecast_res["currently"]["precipType"]
+    let precip_type = forecast_res["currently"]["precipType"]
         .as_str()
         .expect("Not a str");
 
