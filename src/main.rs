@@ -11,12 +11,47 @@ async fn main() {
         .await
         .expect("Serialization error");
 
-    let latitude = &geocode_res["features"][0]["center"][1];
-    let longitude = &geocode_res["features"][0]["center"][0];
-    let location = &geocode_res["features"][0]["place_name"];
+    let latitude = &geocode_res["features"][0]["center"][1]
+        .as_f64()
+        .expect("Not a f64");
+    let longitude = &geocode_res["features"][0]["center"][0]
+        .as_f64()
+        .expect("Not a f64");
+    let location = &geocode_res["features"][0]["text"]
+        .as_str()
+        .expect("Not a str");
 
-    let forecast_uri = format!("https://api.darksky.net/forecast/21921129f2412a7aed8765a17f75fc6c/{lat},{lon}?units=ca&exclude=minutely,hourly,daily,alerts,flags", lat="-10.327262",lon="-48.292613");
+    let forecast_uri = format!(
+        "https://api.darksky.net/forecast/21921129f2412a7aed8765a17f75fc6c/{},{}?units=ca&exclude=minutely,hourly,daily,alerts,flags",
+        latitude, longitude
+    );
 
-    println!("{:#?}", geocode_res);
-    // println!("{}", resp["data"][0]["id"]);
+    let forecast_res = reqwest::get(forecast_uri)
+        .await
+        .expect("Request error")
+        .json::<Value>()
+        .await
+        .expect("Serialization error");
+
+    let summary = &forecast_res["currently"]["summary"]
+        .as_str()
+        .expect("Not a str");
+    let temperature = &forecast_res["currently"]["temperature"]
+        .as_f64()
+        .expect("Not a f64");
+    let precip_probability = &forecast_res["currently"]["precipProbability"]
+        .as_f64()
+        .expect("Not a f64");
+    let precip_type = &forecast_res["currently"]["precipType"]
+        .as_str()
+        .expect("Not a str");
+
+    println!(
+        "At {}, currently is {}, {} degrees and there is a {:.2}% chance of {}.",
+        location,
+        summary,
+        temperature,
+        precip_probability * 100.0,
+        precip_type
+    );
 }
