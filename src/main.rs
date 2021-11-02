@@ -2,7 +2,13 @@ use serde_json::value::Value;
 
 #[tokio::main]
 async fn main() {
-    let geocode_uri = format!("https://api.mapbox.com/geocoding/v5/mapbox.places/{address}.json?access_token=pk.eyJ1IjoibWRtdW5kbyIsImEiOiJjazdkYmUwOGgxbnBlM2ZudTU0ajM1OHhrIn0.hOVUTlxOg_sIww36kjeBiw&limit=1", address="universidade federal do tocantins");
+    let mut args = std::env::args().skip(1);
+    let address = args.next().expect("Address required");
+
+    let geocode_uri = format!(
+        "https://api.mapbox.com/geocoding/v5/mapbox.places/{}.json?access_token=pk.eyJ1IjoibWRtdW5kbyIsImEiOiJjazdkYmUwOGgxbnBlM2ZudTU0ajM1OHhrIn0.hOVUTlxOg_sIww36kjeBiw&limit=1",
+        address
+    );
 
     let geocode_res = reqwest::get(geocode_uri)
         .await
